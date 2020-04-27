@@ -6,11 +6,23 @@ $current=Get-ItemProperty -Path "Registry::\HKEY_USERS\Problemsystem\select" -na
 $default=Get-ItemProperty -Path "Registry::\HKEY_USERS\Problemsystem\select" -name default
 $failed=Get-ItemProperty -Path "Registry::\HKEY_USERS\Problemsystem\select" -name failed
 $lastknowngood=Get-ItemProperty -Path "Registry::\HKEY_USERS\Problemsystem\select" -name lastknowngood
+$OSVersion=(gcim Win32_OperatingSystem).buildnumber
 
+if($OSVersion -like '*9200*' -or $OSVersion -like '*9600*')
+{
 $newcurrent=$current.current+1
 $newdefault=$default.default+1
 $newfailed=$failed.failed+1
 $newlastknowngood=$lastknowngood.lastknowngood+1
+
+}
+else{
+
+$newcurrent=$current.current+1
+$newdefault=$default.default+1
+$newfailed=$failed.failed+1
+$newlastknowngood=$newcurrent
+}
 
 write-host "Setting Current Value. Old value was "$current.current 
 Set-ItemProperty -Path "Registry::\HKEY_USERS\Problemsystem\select" -name current  -Value $newcurrent
@@ -26,3 +38,6 @@ Set-ItemProperty -Path "Registry::\HKEY_USERS\Problemsystem\select" -name lastkn
 
 
 reg unload HKEY_USERS\ProblemSystem
+
+
+
