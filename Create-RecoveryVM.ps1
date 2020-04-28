@@ -11,18 +11,28 @@ DISCLAIMER: all the operations of the functions of the script have cost associat
    
 This script is intended to create a RecoveryVM to troubleshoot Windows VM Issues
 
+.PREREQUISITES
+   
+-Internet connection from Azure VM is required for some operations
+-This script only supports managed disks VMs
+
 .DESCRIPTION
     Script can perform following tasks
     
          1) Create recovery VM
          
-         By doing this, a VM called RecoveryVM-MS will be created. OS Disk of damaged VM will be mounted as data disk. Snapshot and backup disk will be created
-                                                                                  
-         2) Restore VM Disk
+         By doing this, a VM called RecoveryVM-MS will be created in a new VNET/subnet dedicated for it. OS Disk of damaged VM will be mounted as data disk. Snapshot and backup disk will be created
+
+         2) Create Recovery VM and Restore Last Known Good Configuration (Internet connection needed)
+
+         By doing this, a VM called RecoveryVM-MS will be created in a new VNET/subnet dedicated for it. OS Disk of damaged VM will be mounted as data disk. Snapshot and backup disk will be created.
+         Last known good configuration will be applied on the damaged VM and disk will be swapped back to start the VM.
+                                                                                
+         3) Restore VM Disk
          
          This function will perform an OS Swap between the backup OS disk of the damaged VM and the disk that was fixed on the recovery VM
                                                                                
-         3) Clean up Recovery VM
+         4) Clean up Recovery VM
 
          This function will delete the recoveryVM, all associated objects (public IP,NIC and all the snapshots of the damaged VM).
                   
@@ -44,7 +54,8 @@ param(
 function CreateRecoveryVM{
  
 param(
-        [Parameter(Mandatory)][string]$VMName
+        [Parameter(Mandatory)][string]$VMName,
+        [bool]$lastknowngood=$false
       )
 
 write-host ""
@@ -68,9 +79,9 @@ Start-Transcript -Path $transcriptname
     catch{write-host "VM not found, exiting script" -ForegroundColor red;stop-transcript;exit}
 
 
-$location=$VM.location
-$RG=$vm.ResourceGroupName
-$size="Standard_D2s_v3"
+    $location=$VM.location
+    $RG=$vm.ResourceGroupName
+    $size="Standard_D2s_v3"
 
     try {
         $nic=Get-AzNetworkInterface -ResourceId $vm.networkprofile.networkinterfaces.id
@@ -78,10 +89,10 @@ $size="Standard_D2s_v3"
     catch{write-host "Could not obtain network information of VM, please review. Exitting Script" -ForegroundColor red;stop-transcript; exit}
 
     try{
-        $vnetname=$nic.IpConfigurations.Subnet.Id.Split("/")[8]
-        $subnetname=$nic.IpConfigurations.Subnet.Id.Split("/")[10]
-        $vnet=get-azvirtualnetwork -Name $vnetname
-        $subnet=Get-azvirtualnetworksubnetconfig -name $subnetname -VirtualNetwork $vnet
+        #$vnetname=$nic.IpConfigurations.Subnet.Id.Split("/")[8]
+        #$subnetname=$nic.IpConfigurations.Subnet.Id.Split("/")[10]
+        #$vnet=get-azvirtualnetwork -Name $vnetname
+        #$subnet=Get-azvirtualnetworksubnetconfig -name $subnetname -VirtualNetwork $vnet
         }
     catch{write-host "Could not obtain subnet information of VM, please review. Exitting script" -ForegroundColor red;stop-transcript; exit} 
 
@@ -100,7 +111,7 @@ write-host ""
 write-host "Stopping VM $vmname to perform all the operations" -ForegroundColor Yellow
 
 $vmstatus=get-azvm -Name $vmname -status -WarningAction SilentlyContinue
-if($vmstatus.powerstate -like 'running')
+if($vmstatus.powerstate -like '*running*')
 {
 
     try{
@@ -133,16 +144,38 @@ Update-AzVM -ResourceGroupName $RG -VM $vm | out-null
 #######################
 ### Creating RecoveryVM
 #######################
-### Creating new network objects (Public IP and network interface)
+### Creating new network objects (RecoveryVNET and subnet, Public IP and network interface)
+
+
 
 $publicIpname="rvmpublicip-"+$(get-date -f yyyy-MM-dd-HHmmss)
+$vnetname="RecoveryVNET-MS"
+$subnetname="RecoveryVNET-MS-subnet1"
+$nicname="rvm-nic1"+$(get-date -f yyyy-MM-dd-HHmmss)
+
+write-host ""
+write-host "Creating network resources for RecoveryVM-MS." -ForegroundColor Yellow
+write-host "VNET:$vnetname" -ForegroundColor Yellow
+write-host "Subnet:$subnetname" -ForegroundColor Yellow
+write-host "Public IP:$publicipname" -ForegroundColor Yellow
+write-host "NIC:$nicname"  -ForegroundColor Yellow
+write-host "" 
+
+    try{
+
+       $vnet = New-AzVirtualNetwork -ResourceGroupName $RG -Location $location -name $vnetname -AddressPrefix 192.168.150.0/24 -WarningAction SilentlyContinue
+       $subnetConfig = Add-AzVirtualNetworkSubnetConfig -Name $subnetname -AddressPrefix 192.168.150.0/24 -VirtualNetwork $vnet -WarningAction SilentlyContinue
+       $vnet | Set-AzVirtualNetwork | out-null
+        }
+    catch{write-host "Could not create VNET RecoveryVNET-MS and subnet RecoveryVNET-MS-subnet1 to host Recovery VM. Exitting script" -ForegroundColor red;stop-transcript;exit}
 
     try{
     $publicIp = New-AzPublicIpAddress -Name $publicIpName -ResourceGroupName $RG -Location $location -AllocationMethod Dynamic
         }
     catch{write-host "New Public IP address could not be created, please assign one manually" -ForegroundColor red}
 
-    $nicname="rvm-nic1"+$(get-date -f yyyy-MM-dd-HHmmss)
+     $vnet=get-azvirtualnetwork -Name $vnetname
+     $subnet=Get-azvirtualnetworksubnetconfig -name $subnetname -VirtualNetwork $vnet
 
     try{
     $rvmnic = New-AzNetworkInterface -Name $nicname  -ResourceGroupName $RG -Location $location -SubnetId $subnet.id -PublicIpAddressId $PublicIP.id
@@ -162,9 +195,18 @@ $vmconfig=new-azvmconfig -vmname "RECOVERYVM-MS" -vmsize $size -WarningAction Si
     if($vm.storageprofile.ImageReference.Publisher -like "*Windows*")
        {
         
-        $recoveryvm=Set-AzVMSourceImage -VM $vmconfig -PublisherName $vm.storageprofile.imagereference.publisher -offer $vm.storageprofile.imagereference.offer -Skus $vm.StorageProfile.ImageReference.Sku -Version $vm.StorageProfile.ImageReference.Version
+        if($vm.StorageProfile.ImageReference.Sku -like "*2012*")
+        {$version="9600.19652.2003081959"}
+        elseif($vm.StorageProfile.ImageReference.Sku -like "*2016*")
+        {$version="2016.127.20190416"}
+        elseif($vm.StorageProfile.ImageReference.Sku -like "*2019*")
+        {$version="2019.0.20190410"}
+
+        $recoveryvm=Set-AzVMSourceImage -VM $vmconfig -PublisherName $vm.storageprofile.imagereference.publisher -offer $vm.storageprofile.imagereference.offer -Skus $vm.StorageProfile.ImageReference.Sku -Version $version
+        #-Version $vm.StorageProfile.ImageReference.Version
         $recoveryvm = Set-AzVMOperatingSystem -VM $recoveryvm -Windows -ComputerName "RECOVERYVM-MS" -Credential $Credential -ProvisionVMAgent
         $recoveryvm=Add-AzVMNetworkInterface -VM $recoveryvm -id $rvmnic.Id
+        $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
         $recoveryvm=add-azvmdatadisk -vm $recoveryvm -createoption attach -ManagedDiskId $disk.id -lun -0
        }
     else{
@@ -189,6 +231,7 @@ $vmconfig=new-azvmconfig -vmname "RECOVERYVM-MS" -vmsize $size -WarningAction Si
         $recoveryvm = Set-AzVMSourceImage -VM $vmconfig -PublisherName 'MicrosoftWindowsServer' -Offer 'WindowsServer' -Skus $OSImage -Version latest
         $recoveryvm = Set-AzVMOperatingSystem -VM $recoveryvm -Windows -ComputerName "RECOVERYVM-MS" -Credential $Credential -ProvisionVMAgent
         $recoveryvm=Add-AzVMNetworkInterface -VM $recoveryvm -id $rvmnic.Id
+        $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
         $recoveryvm=add-azvmdatadisk -vm $recoveryvm -createoption attach -ManagedDiskId $disk.id -lun -0
         
         }
@@ -201,16 +244,53 @@ try{
     new-azvm -ResourceGroupName $RG -location $location -VM $recoveryvm
    }
 catch{write-host "New VM creation $Vmname failed. Please use the resources listed above to recreate it manually." -ForegroundColor red}
-    
+ 
+####### Installing Hyper-V role if it is required for further troubleshooting   
 write-host "Installing Hyper-V on Recovery VM. It will be rebooted." -ForegroundColor Yellow
+ 
+try{
    
 
-try{
-   Restart-AzVM -Name "RECOVERYVM-MS" -ResourceGroupName $RG -WarningAction SilentlyContinue
-   $protectedSettings = @{"commandToExecute" = 'powershell -ExecutionPolicy Unrestricted -command "Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart"'};
-   $recoveryvm=Set-AzVMExtension -ResourceGroupName $RG -Location $location -VMName "RECOVERYVM-MS" -Name "InstallHyperV" -Publisher "Microsoft.Compute" -ExtensionType "CustomScriptExtension" -TypeHandlerVersion "1.10" -ProtectedSettings $protectedSettings
+   if($vm.StorageProfile.ImageReference.Sku -like "*2012*" -or $OSImage -like "2012-r2-datacenter")
+       {
+       $protectedSettings = @{"commandToExecute" = 'powershell -ExecutionPolicy Unrestricted -command "Enable-WindowsOptionalFeature –Online -FeatureName Microsoft-Hyper-V –All -NoRestart;Install-WindowsFeature RSAT-Hyper-V-Tools -IncludeAllSubFeature;shutdown /r /f /t 0"'};
+       $recoveryvm=Set-AzVMExtension -ResourceGroupName $RG -Location $location -VMName "RECOVERYVM-MS" -Name "InstallHyperV" -Publisher "Microsoft.Compute" -ExtensionType "CustomScriptExtension" -TypeHandlerVersion "1.10" -ProtectedSettings $protectedSettings
+       }
+   else{
+        $protectedSettings = @{"commandToExecute" = 'powershell -ExecutionPolicy Unrestricted -command "Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart"'};
+        $recoveryvm=Set-AzVMExtension -ResourceGroupName $RG -Location $location -VMName "RECOVERYVM-MS" -Name "InstallHyperV" -Publisher "Microsoft.Compute" -ExtensionType "CustomScriptExtension" -TypeHandlerVersion "1.10" -ProtectedSettings $protectedSettings
+   
+       }
     }
 catch{write-host "Could not enable VMEXtension to install Hyper-V. Please install Hyper-v manually" -ForegroundColor red}    
+
+
+
+if($lastknowngood -eq $true)
+{
+    try{
+
+    ###removing the previous extension for installing Hyper-V
+    Remove-AzVMExtension -ResourceGroupName $RG -Name "InstallHyperV" -VMName "RecoveryVM-MS" -WarningAction SilentlyContinue -Force | out-null
+
+    ### Adding the extension 
+
+    write-host "Restoring last known good configuration in VM $vmname" -ForegroundColor Yellow
+    write-host "WARNING: THIS OPERATION WILL FAIL WITHOUT INTERNET CONNECTIVITY FROM THE VM $vmname" -ForegroundColor Yellow
+
+    $URI="https://raw.githubusercontent.com/IgnacioAlvarezArenas/PublicPS/master/LastKnownGood.ps1"
+    $settings = @{"fileUris"= @($URI);"commandToExecute" = 'powershell -ExecutionPolicy Unrestricted -file .\lastknowngood.ps1"'};
+    $recoveryvm=Set-AzVMExtension -ResourceGroupName $RG -Location $location -VMName "RECOVERYVM-MS" -Name "LastKnownGoodConfig" -Publisher "Microsoft.Compute" -ExtensionType "CustomScriptExtension" -TypeHandlerVersion "1.10" -Settings $settings
+       }
+    catch
+        {
+        write-host "Could not enable VMEXtension to restore Last Known Good Config. Check Internet connection and review the extension logs in Recovery VM." -ForegroundColor red
+        write-host "Last Known Good Configuration script can be found at: https://github.com/IgnacioAlvarezArenas/PublicPS/blob/master/LastKnownGood.ps1" -ForegroundColor Yellow
+        stop-transcript;exit
+        }    
+
+
+}
 
 Stop-Transcript
 }
@@ -227,7 +307,7 @@ write-host ""
 write-host ""
 write-host "Script will remove:" -ForegroundColor Yellow
 Write-Host "1) VM RecoveryVM-MS" -ForegroundColor Yellow
-write-host "2) DISK, NIC and Public IP associated to RecoveryVM-MS" -ForegroundColor Yellow
+write-host "2) DISK, VNET, NIC and Public IP associated to RecoveryVM-MS" -ForegroundColor Yellow
 write-host "3) All Snapshots named RecoverySnapshot" -ForegroundColor Yellow
 write-host ""
 
@@ -290,6 +370,13 @@ try {
     }
 catch{write-host "Could not remove disk from RECOVERYVM-MS, please remove it manually" -ForegroundColor red}
 
+write-host ""
+write-host "Removing VNET created for VM" -ForegroundColor Yellow
+try {
+    Remove-AzVirtualNetwork -Name "RecoveryVNET-MS" -ResourceGroupName $RG
+    }
+catch{write-host "Could not remove disk from RECOVERYVM-MS, please remove it manually" -ForegroundColor red}
+
 
 write-host
 write-host "Removing all recovery snapshots from damaged VM $vmname" -ForegroundColor Yellow
@@ -297,8 +384,8 @@ write-host "Removing all recovery snapshots from damaged VM $vmname" -Foreground
 foreach($snap in $snapshots)
     {
     write-host "Removing snapshot " $snap.name -ForegroundColor Yellow
+
      try{
-        
         Remove-AzSnapshot -SnapshotName $snap.name -ResourceGroupName $RG -WarningAction SilentlyContinue
         }
      catch{Write-host "Could not remove snapshots called recoverysnapshot. Please remove them manually if required" -ForegroundColor red}
@@ -356,23 +443,29 @@ Stop-Transcript
 write-host ""
 write-host ""
 write-host "DISCLAIMER: Be aware that this script is intended to create a recovery VM in your environment, having cost associated to it." -ForegroundColor Red 
+write-host ""
+write-host "WARNING: This script only works if your VM has Internet connectivity to connect to Azure resources and also if it has managed disks" -ForegroundColor Red
+write-host ""
+write-host ""
 write-host "Please select what operation you want to proceed with:"
 write-host "1. Create RecoveryVM and attach OS Disk for further investigation. OS Disk snapshot will be taken for backup." -ForegroundColor Yellow
-write-host "2. Restore Disk (Swap OS Disk). Perform this operation after the disk was fixed on Recovery VM" -ForegroundColor Yellow
-write-host "3. Delete RecoveryVM and all its objects. Disk used as backup will remain, will have to be deleted manually" -ForegroundColor Yellow
-write-host "Please select an option (1,2,3):" -ForegroundColor Yellow
+write-host "2. Restore Last Known Good Configuration. This operation creates RecoveryVM and attach OS Disk, restoring last known good configuration on it. OS Disk snapshot will be taken for backup. Disks will be automatically swapped after" -ForegroundColor Yellow
+write-host "3. Restore Disk (Swap OS Disk). Perform this operation after the disk was fixed on Recovery VM" -ForegroundColor Yellow
+write-host "4. Delete RecoveryVM and all its objects. Disk used as backup will remain, will have to be deleted manually" -ForegroundColor Yellow
+write-host "Please select an option (1,2,3,4):" -ForegroundColor Yellow
 $selection=read-host
 
-if($selection -eq "1" -or $selection -eq "2" -or $selection -eq "3")
+if($selection -eq "1" -or $selection -eq "2" -or $selection -eq "3" -or $selection -eq "4")
 {
     switch($selection)
         {
         1 {CreateRecoveryVM -VMName $vmname}
-        2 {RestoreDisk -VMName $vmname}
-        3 {RemoveRecoveryVM -VMName $vmname}
+        2 {CreateRecoveryVM -VMName $vmname -lastknowngood $true;RestoreDisk -VMName $vmname}
+        3 {RestoreDisk -VMName $vmname}
+        4 {RemoveRecoveryVM -VMName $vmname}
         }
 }
 else
 {
-write-host "Selection is not correct. Please select one option by typing the number of the option (1,2,3) and press Enter" -ForegroundColor red
+write-host "Selection is not correct. Please select one option by typing the number of the option (1,2,3 or 4) and press Enter" -ForegroundColor red
 }
