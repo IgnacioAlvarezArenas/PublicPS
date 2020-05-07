@@ -15,10 +15,8 @@ $newcurrent=$current+1
 $newdefault=$default+1
 $newfailed=$failed+1
 $newlastknowngood=$lastknowngood+1
-
 }
 else{
-
 $newcurrent=$current.current+1
 $newdefault=$default.default+1
 $newfailed=$failed.failed+1
