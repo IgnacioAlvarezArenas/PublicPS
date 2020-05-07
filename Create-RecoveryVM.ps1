@@ -105,7 +105,7 @@ if($vmstatus.powerstate -like '*running*')
 {
 
     try{
-    stop-azvm -Name $vmname -ResourceGroupName $RG -WarningAction SilentlyContinue
+    stop-azvm -Name $vmname -ResourceGroupName $vmRG -WarningAction SilentlyContinue
        }
     catch{write-host "VM $vmname could not be stopped. Please review. Exitting script";stop-transcript;exit}
 
