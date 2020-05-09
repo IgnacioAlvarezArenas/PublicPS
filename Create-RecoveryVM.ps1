@@ -188,7 +188,7 @@ $vmconfig=new-azvmconfig -vmname "RECOVERYVM-MS" -vmsize $size -WarningAction Si
         if($vm.StorageProfile.ImageReference.Sku -like "*2012*")
         {$version="9600.19652.2003081959"}
         elseif($vm.StorageProfile.ImageReference.Sku -like "*2016*")
-        {$version="2016.127.20190416"}
+        {$version="2016.127.20190603"}
         elseif($vm.StorageProfile.ImageReference.Sku -like "*2019*")
         {$version="2019.0.20190410"}
 

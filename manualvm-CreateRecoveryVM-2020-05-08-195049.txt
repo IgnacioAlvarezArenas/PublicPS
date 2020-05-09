@@ -1,0 +1,66 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20200508195049
+Username: NATXO_DESKTOP\ssg86
+RunAs User: NATXO_DESKTOP\ssg86
+Configuration Name: 
+Machine: NATXO_DESKTOP (Microsoft Windows NT 10.0.18362.0)
+Host Application: C:\WINDOWS\system32\WindowsPowerShell\v1.0\PowerShell.exe
+Process ID: 23044
+PSVersion: 5.1.18362.752
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.18362.752
+BuildVersion: 10.0.18362.752
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\manualvm-CreateRecoveryVM-2020-05-08-195049.txt
+
+
+Stopping VM manualvm to perform all the operations
+
+
+Taking Snapshot of manualvm
+
+Creating network resources for RecoveryVM-MS.
+VNET:RecoveryVNET-MS
+Subnet:RecoveryVNET-MS-subnet1
+Public IP:rvmpublicip-2020-05-08-195139
+NIC:rvm-nic12020-05-08-195139
+
+
+
+Please enter new admin credentials for the RECOVERYVM
+Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
+The value must be between 12 and 123 characters long.
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script 
+file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct 
+and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script
+file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct
+and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+
+
+Creating new VM
+WARNING: Since the VM is created using premium storage or managed disk, existing standard storage account, labdiag400, is used for boot diagnostics.
+
+Installing Hyper-V on Recovery VM. It will be rebooted.
+Restoring last known good configuration in VM manualvm
+WARNING: THIS OPERATION WILL FAIL WITHOUT INTERNET CONNECTIVITY FROM THE VM manualvm
+**********************
+Windows PowerShell transcript end
+End time: 20200508200259
+**********************

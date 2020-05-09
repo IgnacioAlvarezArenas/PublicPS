@@ -1,0 +1,628 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20200509101048
+Username: NATXO_DESKTOP\ssg86
+RunAs User: NATXO_DESKTOP\ssg86
+Configuration Name: 
+Machine: NATXO_DESKTOP (Microsoft Windows NT 10.0.18362.0)
+Host Application: C:\WINDOWS\system32\WindowsPowerShell\v1.0\PowerShell.exe
+Process ID: 23044
+PSVersion: 5.1.18362.752
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.18362.752
+BuildVersion: 10.0.18362.752
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-101048.txt
+Confirm
+Provided resource group already exists. Are you sure you want to update it?
+&Yes  &No  &Suspend
+Y
+new-azresourcegroup : The resource group 'recoveryrg' is in deprovisioning state and cannot perform this operation.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:85 char:9
++     $RG=new-azresourcegroup -name recoveryrg -Location $location
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [New-AzResourceGroup], CloudException
+    + FullyQualifiedErrorId : 
+Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.NewAzureResourceGroupCmdlet
+new-azresourcegroup : The resource group 'recoveryrg' is in deprovisioning state and cannot perform this operation.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:85 char:9
++     $RG=new-azresourcegroup -name recoveryrg -Location $location
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [New-AzResourceGroup], CloudException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.NewAzureResourceGroupCmdlet
+
+
+
+Stopping VM AZCXP-COM-LAB2 to perform all the operations
+Virtual machine stopping operation
+This cmdlet will stop the specified virtual machine. Do you want to continue?
+&Yes  &No  &Suspend
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> .\Create-RecoveryVM.ps1
+
+
+DISCLAIMER: Be aware that this script is intended to create a recovery VM in your environment, having cost associated to it.
+
+WARNING: This script only works in VMs that have managed disks, and as long as the disks are not encrypted
+
+
+Please select what operation you want to proceed with:
+1. Create RecoveryVM and attach OS Disk for further investigation. OS Disk snapshot will be taken for backup.
+2. Restore Last Known Good Configuration. This operation creates RecoveryVM and attach OS Disk, restoring last known good configuration on it. OS Disk snapshot will be taken for backup. Disks will be automatically swapped after
+3. Restore Disk (Swap OS Disk). Perform this operation after the disk was fixed on Recovery VM
+4. Delete RecoveryVM and all its objects. Disk used as backup will remain, will have to be deleted manually
+Please select an option (1,2,3,4):
+
+
+This is the list of operations done by this script
+1) AZCXP-COM-LAB2 will be stopped
+2) AZCXP-COM-LAB2 OS disk will get an snapshot taken
+3) AZCXP-COM-LAB2 will get swapped OS disk for a new one from the snapshot in order to proceed with the mount of the old disk in Recovery VM
+4) All the information from the console of this script will be kept in a txt file in the running directory for debugging purposes
+Transcript started, output file is .\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-101353.txt
+
+
+Stopping VM AZCXP-COM-LAB2 to perform all the operations
+Virtual machine stopping operation
+This cmdlet will stop the specified virtual machine. Do you want to continue?
+&Yes  &No  &Suspend
+Y
+
+
+OperationId : 31fdbe8f-0acd-49f2-8647-c59d26e68903
+Status      : Succeeded
+StartTime   : 09/05/2020 10:13:59
+EndTime     : 09/05/2020 10:14:46
+Error       :
+
+
+
+Taking Snapshot of AZCXP-COM-LAB2
+
+Creating network resources for RecoveryVM-MS.
+VNET:RecoveryVNET-MS
+Subnet:RecoveryVNET-MS-subnet1
+Public IP:rvmpublicip-2020-05-09-101530
+NIC:rvm-nic12020-05-09-101530
+
+
+
+Please enter new admin credentials for the RECOVERYVM
+Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
+The value must be between 12 and 123 characters long.
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script 
+file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct 
+and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script file, or operable
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+
+
+Creating new VM
+WARNING: Since the VM is created using premium storage or managed disk, existing standard storage account, labdiag400, is used for boot diagnostics.
+new-azvm : Required parameter 'adminPassword' is missing (null).
+ErrorCode: InvalidParameter
+ErrorMessage: Required parameter 'adminPassword' is missing (null).
+ErrorTarget: adminPassword
+StatusCode: 400
+ReasonPhrase: Bad Request
+OperationID : 778dfd9c-831c-4948-96ce-7495deda10e9
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:232 char:1
++ new-azvm -ResourceGroupName $RG -location $location -VM $recoveryvm
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [New-AzVM], ComputeCloudException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.NewAzureVMCommand
+new-azvm : Required parameter 'adminPassword' is missing (null).
+ErrorCode: InvalidParameter
+ErrorMessage: Required parameter 'adminPassword' is missing (null).
+ErrorTarget: adminPassword
+StatusCode: 400
+ReasonPhrase: Bad Request
+OperationID : 778dfd9c-831c-4948-96ce-7495deda10e9
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:232 char:1
++ new-azvm -ResourceGroupName $RG -location $location -VM $recoveryvm
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [New-AzVM], ComputeCloudException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.NewAzureVMCommand
+
+New VM creation RecoveryVM-MS failed. Please proceed with manual creation or review errors above.
+
+Swapping back disk per VM Creation Fail
+
+Deleting resource group RecoveryRG
+True
+Transcript stopped, output file is C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-101353.txt
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> TerminatingError(): "System error."
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> .\Create-RecoveryVM.ps1
+
+
+DISCLAIMER: Be aware that this script is intended to create a recovery VM in your environment, having cost associated to it.
+
+WARNING: This script only works in VMs that have managed disks, and as long as the disks are not encrypted
+
+
+Please select what operation you want to proceed with:
+1. Create RecoveryVM and attach OS Disk for further investigation. OS Disk snapshot will be taken for backup.
+2. Restore Last Known Good Configuration. This operation creates RecoveryVM and attach OS Disk, restoring last known good configuration on it. OS Disk snapshot will be taken for backup. Disks will be automatically swapped after
+3. Restore Disk (Swap OS Disk). Perform this operation after the disk was fixed on Recovery VM
+4. Delete RecoveryVM and all its objects. Disk used as backup will remain, will have to be deleted manually
+Please select an option (1,2,3,4):
+
+
+This is the list of operations done by this script
+1) AZCXP-COM-LAB2 will be stopped
+2) AZCXP-COM-LAB2 OS disk will get an snapshot taken
+3) AZCXP-COM-LAB2 will get swapped OS disk for a new one from the snapshot in order to proceed with the mount of the old disk in Recovery VM
+4) All the information from the console of this script will be kept in a txt file in the running directory for debugging purposes
+Transcript started, output file is .\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-105557.txt
+
+
+Stopping VM AZCXP-COM-LAB2 to perform all the operations
+
+
+Taking Snapshot of AZCXP-COM-LAB2
+
+Creating network resources for RecoveryVM-MS.
+VNET:RecoveryVNET-MS
+Subnet:RecoveryVNET-MS-subnet1
+Public IP:rvmpublicip-2020-05-09-105649
+NIC:rvm-nic12020-05-09-105649
+
+
+
+Please enter new admin credentials for the RECOVERYVM
+Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
+The value must be between 12 and 123 characters long.
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script 
+file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct 
+and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script file, or operable
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+
+
+Creating new VM
+WARNING: Since the VM is created using premium storage or managed disk, existing standard storage account, labdiag400, is used for boot diagnostics.
+
+Installing Hyper-V on Recovery VM. It will be rebooted.
+Restoring last known good configuration in VM AZCXP-COM-LAB2
+WARNING: THIS OPERATION WILL FAIL WITHOUT INTERNET CONNECTIVITY FROM THE VM AZCXP-COM-LAB2
+RequestId IsSuccessStatusCode StatusCode ReasonPhrase
+--------- ------------------- ---------- ------------
+                         True         OK OK
+Transcript stopped, output file is C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-105557.txt
+Transcript started, output file is .\AZCXP-COM-LAB2-RestoreDisk-2020-05-09-111025.txt
+Detaching disk from RecoveryVM-MS
+                         True         OK OK
+Swapping OSDisk on AZCXP-COM-LAB2 with the recovered disk
+Transcript stopped, output file is C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\AZCXP-COM-LAB2-RestoreDisk-2020-05-09-111025.txt
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> cd ..
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS> cd .\Public\
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> ls
+
+
+    Directory: C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----       08/05/2020     20:03           6864 Compute-LAB1-NonBoot.json
+-a----       11/04/2020     08:49            426 Compute-LAB1-NonBoot.ps1
+-a----       11/04/2020     08:49            329 Compute-LAB1-NonBoot_params.json
+-a----       08/05/2020     22:19           6627 Compute-LAB2-NonBoot.json
+-a----       08/05/2020     22:22            124 Compute-LAB2-NonBoot.ps1
+-a----       08/05/2020     20:03           8162 ComputeSTG-LAB1-FileShare.json
+-a----       11/04/2020     15:07            120 ComputeSTG-LAB1-FileShare.ps1
+-a----       11/04/2020     08:49            329 ComputeSTG-LAB1-FileShare_params.json
+-a----       12/04/2020     17:21            343 Network-LAB1-InternalILB_params.json
+-a----       12/04/2020     16:17           1217 Network-LAB1-InternalLB-VPNIPs.json
+-a----       13/04/2020     08:41          19410 Network-LAB1-InternalLB.json
+-a----       12/04/2020     13:10             63 Network-LAB1-InternalLB.ps1
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> New-AzResourceGroup -Name NEWHOPENE -Location northeurope
+
+
+ResourceGroupName : NEWHOPENE
+Location          : northeurope
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/00a291d7-244d-4ab9-a32c-664584b6b9c3/resourceGroups/NEWHOPENE
+
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> New-AzResourceGroupDeployment -TemplateFile .\Compute-LAB2-NonBoot.json -ResourceGroupName newhopene
+New-AzResourceGroupDeployment : 11:32:28 - Error: Code=ResourceGroupBeingDeleted; Message=The resource group 
+'newhopene' is in deprovisioning state and cannot perform this operation.
+
+At line:1 char:1
++ New-AzResourceGroupDeployment -TemplateFile .\Compute-LAB2-NonBoot.js ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [New-AzResourceGroupDeployment], Exception
+    + FullyQualifiedErrorId : 
+Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.NewAzureResourceGroupDeploymentCmdlet
+New-AzResourceGroupDeployment : 11:32:28 - Error: Code=ResourceGroupBeingDeleted; Message=The resource group 'newhopene' is in
+deprovisioning state and cannot perform this operation.
+
+At line:1 char:1
++ New-AzResourceGroupDeployment -TemplateFile .\Compute-LAB2-NonBoot.js ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [New-AzResourceGroupDeployment], Exception
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.NewAzureResourceGroupDeploymentCmdlet
+
+New-AzResourceGroupDeployment : The deployment validation failed
+At line:1 char:1
++ New-AzResourceGroupDeployment -TemplateFile .\Compute-LAB2-NonBoot.js ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [New-AzResourceGroupDeployment], InvalidOperationException
+    + FullyQualifiedErrorId : 
+Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.NewAzureResourceGroupDeploymentCmdlet
+New-AzResourceGroupDeployment : The deployment validation failed
+At line:1 char:1
++ New-AzResourceGroupDeployment -TemplateFile .\Compute-LAB2-NonBoot.js ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [New-AzResourceGroupDeployment], InvalidOperationException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.NewAzureResourceGroupDeploymentCmdlet
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> New-AzResourceGroup -Name NEWHOPENE2 -Location northeurope
+
+
+ResourceGroupName : NEWHOPENE2
+Location          : northeurope
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/00a291d7-244d-4ab9-a32c-664584b6b9c3/resourceGroups/NEWHOPENE2
+
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> New-AzResourceGroupDeployment -TemplateFile .\Compute-LAB2-NonBoot.json -ResourceGroupName newhopene2
+
+
+DeploymentName          : Compute-LAB2-NonBoot
+ResourceGroupName       : newhopene2
+ProvisioningState       : Succeeded
+Timestamp               : 09/05/2020 10:40:24
+Mode                    : Incremental
+TemplateLink            :
+Parameters              :
+                          Name             Type                       Value
+                          ===============  =========================  ==========
+                          adminUsername    String                     natxoadmin
+                          adminPassword    SecureString
+
+Outputs                 :
+DeploymentDebugLogLevel :
+
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> cd ..
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS> cd .\PublicPS\
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> .\Create-RecoveryVM.ps1
+
+
+DISCLAIMER: Be aware that this script is intended to create a recovery VM in your environment, having cost associated to it.
+
+WARNING: This script only works in VMs that have managed disks, and as long as the disks are not encrypted
+
+
+Please select what operation you want to proceed with:
+1. Create RecoveryVM and attach OS Disk for further investigation. OS Disk snapshot will be taken for backup.
+2. Restore Last Known Good Configuration. This operation creates RecoveryVM and attach OS Disk, restoring last known good configuration on it. OS Disk snapshot will be taken for backup. Disks will be automatically swapped after
+3. Restore Disk (Swap OS Disk). Perform this operation after the disk was fixed on Recovery VM
+4. Delete RecoveryVM and all its objects. Disk used as backup will remain, will have to be deleted manually
+Please select an option (1,2,3,4):
+
+
+This is the list of operations done by this script
+1) AZCXP-COM-LAB2 will be stopped
+2) AZCXP-COM-LAB2 OS disk will get an snapshot taken
+3) AZCXP-COM-LAB2 will get swapped OS disk for a new one from the snapshot in order to proceed with the mount of the old disk in Recovery VM
+4) All the information from the console of this script will be kept in a txt file in the running directory for debugging purposes
+Transcript started, output file is .\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-114610.txt
+
+
+Stopping VM AZCXP-COM-LAB2 to perform all the operations
+Virtual machine stopping operation
+This cmdlet will stop the specified virtual machine. Do you want to continue?
+&Yes  &No  &Suspend
+Y
+
+
+OperationId : 25882e3b-c07e-4034-b0ab-4dc52f88ce73
+Status      : Succeeded
+StartTime   : 09/05/2020 11:46:15
+EndTime     : 09/05/2020 11:47:26
+Error       :
+
+
+
+Taking Snapshot of AZCXP-COM-LAB2
+
+Creating network resources for RecoveryVM-MS.
+VNET:RecoveryVNET-MS
+Subnet:RecoveryVNET-MS-subnet1
+Public IP:rvmpublicip-2020-05-09-114809
+NIC:rvm-nic12020-05-09-114809
+
+
+
+Please enter new admin credentials for the RECOVERYVM
+Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
+The value must be between 12 and 123 characters long.
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script 
+file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct 
+and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script file, or operable
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+
+
+Creating new VM
+WARNING: Since the VM is created using premium storage or managed disk, existing standard storage account, labdiag400, is used for boot diagnostics.
+
+RequestId           :
+IsSuccessStatusCode : True
+StatusCode          : OK
+ReasonPhrase        : OK
+
+Installing Hyper-V on Recovery VM. It will be rebooted.
+Restoring last known good configuration in VM AZCXP-COM-LAB2
+WARNING: THIS OPERATION WILL FAIL WITHOUT INTERNET CONNECTIVITY FROM THE VM AZCXP-COM-LAB2
+Transcript stopped, output file is C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-114610.txt
+Transcript started, output file is .\AZCXP-COM-LAB2-RestoreDisk-2020-05-09-120137.txt
+Detaching disk from RecoveryVM-MS
+
+RequestId           :
+IsSuccessStatusCode : True
+StatusCode          : OK
+ReasonPhrase        : OK
+
+Swapping OSDisk on AZCXP-COM-LAB2 with the recovered disk
+Transcript stopped, output file is C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\AZCXP-COM-LAB2-RestoreDisk-2020-05-09-120137.txt
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> cd ..
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS> cd .\Public\
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> ls
+
+
+    Directory: C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----       08/05/2020     20:03           6864 Compute-LAB1-NonBoot.json
+-a----       11/04/2020     08:49            426 Compute-LAB1-NonBoot.ps1
+-a----       11/04/2020     08:49            329 Compute-LAB1-NonBoot_params.json
+-a----       08/05/2020     22:19           6627 Compute-LAB2-NonBoot.json
+-a----       08/05/2020     22:22            124 Compute-LAB2-NonBoot.ps1
+-a----       08/05/2020     20:03           8162 ComputeSTG-LAB1-FileShare.json
+-a----       11/04/2020     15:07            120 ComputeSTG-LAB1-FileShare.ps1
+-a----       11/04/2020     08:49            329 ComputeSTG-LAB1-FileShare_params.json
+-a----       12/04/2020     17:21            343 Network-LAB1-InternalILB_params.json
+-a----       12/04/2020     16:17           1217 Network-LAB1-InternalLB-VPNIPs.json
+-a----       13/04/2020     08:41          19410 Network-LAB1-InternalLB.json
+-a----       12/04/2020     13:10             63 Network-LAB1-InternalLB.ps1
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> New-AzResourceGroup -Name NEWHOPENE2 -Location northeurope
+
+
+ResourceGroupName : NEWHOPENE2
+Location          : northeurope
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/00a291d7-244d-4ab9-a32c-664584b6b9c3/resourceGroups/NEWHOPENE2
+
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> New-AzResourceGroupDeployment -TemplateFile .\Compute-LAB2-NonBoot.json -ResourceGroupName newhopene2
+
+
+DeploymentName          : Compute-LAB2-NonBoot
+ResourceGroupName       : newhopene2
+ProvisioningState       : Succeeded
+Timestamp               : 09/05/2020 11:32:09
+Mode                    : Incremental
+TemplateLink            :
+Parameters              :
+                          Name             Type                       Value
+                          ===============  =========================  ==========
+                          adminUsername    String                     natxoadmin
+                          adminPassword    SecureString
+
+Outputs                 :
+DeploymentDebugLogLevel :
+
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\Public> cd ..
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS> cd .\PublicPS\
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> ls
+
+
+    Directory: C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----       08/05/2020     22:03           3007 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-08-213543.txt
+-a----       08/05/2020     22:51           4371 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-08-223554.txt
+-a----       09/05/2020     07:53           2741 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-08-225142.txt
+-a----       09/05/2020     09:08           3415 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-085429.txt
+-a----       09/05/2020     09:49           3437 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-093516.txt
+-a----       09/05/2020     12:32          24914 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-101048.txt
+-a----       09/05/2020     10:22           4677 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-101353.txt
+-a----       09/05/2020     11:10           3003 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-105557.txt
+-a----       09/05/2020     12:01           3415 AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-114610.txt
+-a----       08/05/2020     22:04            947 AZCXP-COM-LAB2-RestoreDisk-2020-05-08-220314.txt
+-a----       09/05/2020     08:05            904 AZCXP-COM-LAB2-RestoreDisk-2020-05-09-080436.txt
+-a----       09/05/2020     09:10           1009 AZCXP-COM-LAB2-RestoreDisk-2020-05-09-090854.txt
+-a----       09/05/2020     09:50           1009 AZCXP-COM-LAB2-RestoreDisk-2020-05-09-094934.txt
+-a----       09/05/2020     11:11            947 AZCXP-COM-LAB2-RestoreDisk-2020-05-09-111025.txt
+-a----       09/05/2020     12:02           1009 AZCXP-COM-LAB2-RestoreDisk-2020-05-09-120137.txt
+-a----       08/05/2020     19:28          21843 AZCXP-COM-LAB2c-CreateRecoveryVM-2020-05-08-192129.txt
+-a----       08/05/2020     19:28          15754 AZCXP-COM-LAB2c-CreateRecoveryVM-2020-05-08-192307.txt
+-a----       08/05/2020     19:28           2757 AZCXP-COM-LAB2c-CreateRecoveryVM-2020-05-08-192417.txt
+-a----       08/05/2020     20:45           3421 AZCXP-COM-LAB2c-CreateRecoveryVM-2020-05-08-203120.txt
+-a----       08/05/2020     20:46           1011 AZCXP-COM-LAB2c-RestoreDisk-2020-05-08-204538.txt
+-a----       08/05/2020     19:45          23081 Create-RecoveryVM.ps1
+-a----       08/05/2020     19:15           1889 LastKnownGood.ps1
+-a----       08/05/2020     20:02           2974 manualvm-CreateRecoveryVM-2020-05-08-195049.txt
+-a----       08/05/2020     20:18           2394 manualvm-RemoveRecoveryVM-2020-05-08-201124.txt
+-a----       08/05/2020     20:04            935 manualvm-RestoreDisk-2020-05-08-200259.txt
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> .\Create-RecoveryVM.ps1
+
+
+DISCLAIMER: Be aware that this script is intended to create a recovery VM in your environment, having cost associated to it.
+
+WARNING: This script only works in VMs that have managed disks, and as long as the disks are not encrypted
+
+
+Please select what operation you want to proceed with:
+1. Create RecoveryVM and attach OS Disk for further investigation. OS Disk snapshot will be taken for backup.
+2. Restore Last Known Good Configuration. This operation creates RecoveryVM and attach OS Disk, restoring last known good configuration on it. OS Disk snapshot will be taken for backup. Disks will be automatically swapped after
+3. Restore Disk (Swap OS Disk). Perform this operation after the disk was fixed on Recovery VM
+4. Delete RecoveryVM and all its objects. Disk used as backup will remain, will have to be deleted manually
+Please select an option (1,2,3,4):
+
+
+This is the list of operations done by this script
+1) AZCXP-COM-LAB2 will be stopped
+2) AZCXP-COM-LAB2 OS disk will get an snapshot taken
+3) AZCXP-COM-LAB2 will get swapped OS disk for a new one from the snapshot in order to proceed with the mount of the old disk in Recovery VM
+4) All the information from the console of this script will be kept in a txt file in the running directory for debugging purposes
+Transcript started, output file is .\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-123423.txt
+
+
+Stopping VM AZCXP-COM-LAB2 to perform all the operations
+Virtual machine stopping operation
+This cmdlet will stop the specified virtual machine. Do you want to continue?
+&Yes  &No  &Suspend
+Y
+
+
+OperationId : 2233ed5a-99f5-4a64-ac9d-3052c1f29948
+Status      : Succeeded
+StartTime   : 09/05/2020 12:34:29
+EndTime     : 09/05/2020 12:35:17
+Error       :
+
+
+
+Taking Snapshot of AZCXP-COM-LAB2
+
+Creating network resources for RecoveryVM-MS.
+VNET:RecoveryVNET-MS
+Subnet:RecoveryVNET-MS-subnet1
+Public IP:rvmpublicip-2020-05-09-123600
+NIC:rvm-nic12020-05-09-123600
+
+
+
+Please enter new admin credentials for the RECOVERYVM
+Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
+The value must be between 12 and 123 characters long.
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script 
+file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct 
+and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script file, or operable
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+
+
+Creating new VM
+WARNING: Since the VM is created using premium storage or managed disk, existing standard storage account, labdiag400, is used for boot diagnostics.
+
+RequestId           :
+IsSuccessStatusCode : True
+StatusCode          : OK
+ReasonPhrase        : OK
+
+Installing Hyper-V on Recovery VM. It will be rebooted.
+Restoring last known good configuration in VM AZCXP-COM-LAB2
+WARNING: THIS OPERATION WILL FAIL WITHOUT INTERNET CONNECTIVITY FROM THE VM AZCXP-COM-LAB2
+Transcript stopped, output file is C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\AZCXP-COM-LAB2-CreateRecoveryVM-2020-05-09-123423.txt
+Transcript started, output file is .\AZCXP-COM-LAB2-RestoreDisk-2020-05-09-124833.txt
+Detaching disk from RecoveryVM-MS
+
+RequestId           :
+IsSuccessStatusCode : True
+StatusCode          : OK
+ReasonPhrase        : OK
+
+Swapping OSDisk on AZCXP-COM-LAB2 with the recovered disk
+Transcript stopped, output file is C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\AZCXP-COM-LAB2-RestoreDisk-2020-05-09-124833.txt
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> s
+s : The term 's' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ s
++ ~
+    + CategoryInfo          : ObjectNotFound: (s:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+s : The term 's' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or
+if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ s
++ ~
+    + CategoryInfo          : ObjectNotFound: (s:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> git add -A
+

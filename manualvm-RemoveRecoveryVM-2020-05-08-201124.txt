@@ -1,0 +1,76 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20200508201124
+Username: NATXO_DESKTOP\ssg86
+RunAs User: NATXO_DESKTOP\ssg86
+Configuration Name: 
+Machine: NATXO_DESKTOP (Microsoft Windows NT 10.0.18362.0)
+Host Application: C:\WINDOWS\system32\WindowsPowerShell\v1.0\PowerShell.exe
+Process ID: 23044
+PSVersion: 5.1.18362.752
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.18362.752
+BuildVersion: 10.0.18362.752
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\manualvm-RemoveRecoveryVM-2020-05-08-201124.txt
+The following resources will be removed:
+NIC:  rvm-nic12020-05-08-195139
+PublicIP: rvmpublicip-2020-05-08-195139
+snapshots:  manualvm-RecoverySnapshot-2020-05-08-195057
+VNET: RecoveryVNET-MS
+Resource group: RecoveryRG
+Do you agree to remove all the following resources? (yes/no)
+Stopping Recovery VM
+
+
+OperationId : a865c65e-7192-4e0a-af9d-e8eb69258b40
+Status      : Succeeded
+StartTime   : 08/05/2020 20:11:30
+EndTime     : 08/05/2020 20:15:53
+Error       :
+
+
+
+Removing VM RecoveryVM-MS
+OperationId : 93200b30-5cb6-44b0-b0e0-c89cdf3adae6
+Status      : Succeeded
+StartTime   : 08/05/2020 20:15:54
+EndTime     : 08/05/2020 20:16:04
+Error       :
+
+
+
+Removing NIC of RECOVERYVM-MS:  /subscriptions/00a291d7-244d-4ab9-a32c-664584b6b9c3/resourceGroups/recoveryrg/providers/Microsoft.Network/networkInterfaces/rvm-nic12020-05-08-195139
+
+Removing Public IP of Recovery VM: rvmpublicip-2020-05-08-195139
+
+Removing OS Disk of RECOVERYVM-MS
+
+Name      : 6a66acef-3f04-49ca-bdc8-f735b981b93d
+StartTime : 08/05/2020 20:16:27
+EndTime   : 08/05/2020 20:16:58
+Status    : Succeeded
+Error     :
+
+
+Removing VNET created for VM
+
+Removing all recovery snapshots from damaged VM manualvm
+Removing snapshot  manualvm-RecoverySnapshot-2020-05-08-195057
+
+Name      : 254cfbe2-4997-45b2-8a49-db30979bfecc
+StartTime : 08/05/2020 20:17:09
+EndTime   : 08/05/2020 20:17:40
+Status    : Succeeded
+Error     :
+
+True
+Leaving disk Disk-manualvm-RecoverySnapshot-2020-05-08-195057 not deleted as a possible backup. Please remove it manually once incident is resolved.
+**********************
+Windows PowerShell transcript end
+End time: 20200508201831
+**********************

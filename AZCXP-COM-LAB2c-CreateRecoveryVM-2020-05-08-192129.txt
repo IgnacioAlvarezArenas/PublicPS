@@ -1,0 +1,290 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20200508192129
+Username: NATXO_DESKTOP\ssg86
+RunAs User: NATXO_DESKTOP\ssg86
+Configuration Name: 
+Machine: NATXO_DESKTOP (Microsoft Windows NT 10.0.18362.0)
+Host Application: C:\WINDOWS\system32\WindowsPowerShell\v1.0\PowerShell.exe
+Process ID: 12928
+PSVersion: 5.1.18362.752
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.18362.752
+BuildVersion: 10.0.18362.752
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\AZCXP-COM-LAB2c-CreateRecoveryVM-2020-05-08-192129.txt
+get-azvm : Your Azure credentials have not been set up or have expired, please run Connect-AzAccount to set up your 
+Azure credentials.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:78 char:12
++        $VM=get-azvm -Name $VMName
++            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [Get-AzVM], ArgumentException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.GetAzureVMCommand
+get-azvm : Your Azure credentials have not been set up or have expired, please run Connect-AzAccount to set up your Azure credentials.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:78 char:12
++        $VM=get-azvm -Name $VMName
++            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [Get-AzVM], ArgumentException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.GetAzureVMCommand
+
+PS>TerminatingError(New-AzResourceGroup): "Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an argument that is not null or empty, and then try the command again."
+New-AzResourceGroup : Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an 
+argument that is not null or empty, and then try the command again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:85 char:56
++     $RG=new-azresourcegroup -name recoveryrg -Location $location
++                                                        ~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [New-AzResourceGroup], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implemen
+tation.NewAzureResourceGroupCmdlet
+New-AzResourceGroup : Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an argument that is not null
+or empty, and then try the command again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:85 char:56
++     $RG=new-azresourcegroup -name recoveryrg -Location $location
++                                                        ~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [New-AzResourceGroup], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.NewAzureResou
+   rceGroupCmdlet
+
+>> TerminatingError(Get-AzResourceGroup): "Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an argument that is not null or empty, and then try the command again."
+Get-AzResourceGroup : Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an 
+argument that is not null or empty, and then try the command again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:86 char:57
++ ... $RG=(get-azresourcegroup -name recoveryrg -location $location).Resour ...
++                                                         ~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [Get-AzResourceGroup], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implemen
+tation.GetAzureResourceGroupCmdlet
+Get-AzResourceGroup : Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an argument that is not null
+or empty, and then try the command again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:86 char:57
++ ... $RG=(get-azresourcegroup -name recoveryrg -location $location).Resour ...
++                                                         ~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [Get-AzResourceGroup], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.GetAzureResou
+   rceGroupCmdlet
+
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> Login-AzAccount
+
+Account                SubscriptionName TenantId Environment
+-------                ---------------- -------- -----------
+igalvare@microsoft.com                           AzureCloud
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> .\Create-RecoveryVM.ps1
+
+
+DISCLAIMER: Be aware that this script is intended to create a recovery VM in your environment, having cost associated to it.
+
+WARNING: This script only works in VMs that have managed disks, and as long as the disks are not encrypted
+
+
+Please select what operation you want to proceed with:
+1. Create RecoveryVM and attach OS Disk for further investigation. OS Disk snapshot will be taken for backup.
+2. Restore Last Known Good Configuration. This operation creates RecoveryVM and attach OS Disk, restoring last known good configuration on it. OS Disk snapshot will be taken for backup. Disks will be automatically swapped after
+3. Restore Disk (Swap OS Disk). Perform this operation after the disk was fixed on Recovery VM
+4. Delete RecoveryVM and all its objects. Disk used as backup will remain, will have to be deleted manually
+Please select an option (1,2,3,4):
+
+
+This is the list of operations done by this script
+1) AZCXP-COM-LAB2c will be stopped
+2) AZCXP-COM-LAB2c OS disk will get an snapshot taken
+3) AZCXP-COM-LAB2c will get swapped OS disk for a new one from the snapshot in order to proceed with the mount of the old disk in Recovery VM
+4) All the information from the console of this script will be kept in a txt file in the running directory for debugging purposes
+Transcript started, output file is .\AZCXP-COM-LAB2c-CreateRecoveryVM-2020-05-08-192307.txt
+get-azvm : No tenant found in the context.  Please ensure that the credentials you provided are authorized to access an 
+Azure subscription, then run Connect-AzAccount to login.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:78 char:12
++        $VM=get-azvm -Name $VMName
++            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [Get-AzVM], ArgumentException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.GetAzureVMCommand
+get-azvm : No tenant found in the context.  Please ensure that the credentials you provided are authorized to access an Azure subscription,
+then run Connect-AzAccount to login.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:78 char:12
++        $VM=get-azvm -Name $VMName
++            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [Get-AzVM], ArgumentException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.GetAzureVMCommand
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> TerminatingError(New-AzResourceGroup): "Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an argument that is not null or empty, and then try the command again."
+New-AzResourceGroup : Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an 
+argument that is not null or empty, and then try the command again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:85 char:56
++     $RG=new-azresourcegroup -name recoveryrg -Location $location
++                                                        ~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [New-AzResourceGroup], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implemen
+tation.NewAzureResourceGroupCmdlet
+New-AzResourceGroup : Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an argument that is not null
+or empty, and then try the command again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:85 char:56
++     $RG=new-azresourcegroup -name recoveryrg -Location $location
++                                                        ~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [New-AzResourceGroup], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.NewAzureResou
+   rceGroupCmdlet
+
+>> TerminatingError(Get-AzResourceGroup): "Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an argument that is not null or empty, and then try the command again."
+Get-AzResourceGroup : Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an 
+argument that is not null or empty, and then try the command again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:86 char:57
++ ... $RG=(get-azresourcegroup -name recoveryrg -location $location).Resour ...
++                                                         ~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [Get-AzResourceGroup], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implemen
+tation.GetAzureResourceGroupCmdlet
+Get-AzResourceGroup : Cannot validate argument on parameter 'Location'. The argument is null or empty. Provide an argument that is not null
+or empty, and then try the command again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:86 char:57
++ ... $RG=(get-azresourcegroup -name recoveryrg -location $location).Resour ...
++                                                         ~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [Get-AzResourceGroup], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.GetAzureResou
+   rceGroupCmdlet
+
+get-azdisk : No tenant found in the context.  Please ensure that the credentials you provided are authorized to access 
+an Azure subscription, then run Connect-AzAccount to login.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:90 char:15
++         $disk=get-azdisk -Name $vm.storageprofile.osdisk.name
++               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [Get-AzDisk], ArgumentException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.Automation.GetAzureRmDisk
+get-azdisk : No tenant found in the context.  Please ensure that the credentials you provided are authorized to access an Azure
+subscription, then run Connect-AzAccount to login.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:90 char:15
++         $disk=get-azdisk -Name $vm.storageprofile.osdisk.name
++               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (:) [Get-AzDisk], ArgumentException
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.Automation.GetAzureRmDisk
+
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> Get-AzSubscription
+
+Name                                           Id                                   TenantId                             State
+----                                           --                                   --------                             -----
+Ignacio's Subscription                         00a291d7-244d-4ab9-a32c-664584b6b9c3 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Epic-Edge-ES-ReproVMLab                        333e402a-65a0-45a9-8e23-867ca146c290 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Core-ES-BranchManagement                       5b4328b8-7b74-4d86-86fd-f2c35f2790fb 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Cosmos_WDG_Core_BnB_100292                     e01de573-132a-42ac-9ee2-f9dea9dd2717 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Azure Stack Diagnostics CI and Production VaaS a8183b2d-7a4c-45e9-8736-dac11b84ff14 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Azure CXP Community Internal Consumption       b83c1ed3-c5b6-44fb-b5ba-2b83a074c23f 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+TScience                                       9ec1d932-0f3f-486c-acc6-e7d78b358f9b 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+ClientToolsInfra_670062                        88d5392f-a34f-4769-b405-f597fc533613 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+MSR AI - MLO                                   d20432c3-8203-4c39-865a-7c6c2fb1ffd2 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Customer 360 DevTest 001                       7c469e39-c3bc-4752-a3f1-7447c5aecfa8 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Skype-NetEM-PROD                               8cff5d56-95fb-4a74-ab9d-079edb45313e 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Code generate Test and Infra                   7fd08dcc-a653-4b0f-8f8c-4dac889fdda4 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+EvanBaCore                                     27b2ee0a-4093-4253-95b5-c595487ad66f 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+ServicesPortfolio MCS                          eec2de82-6ab2-4a84-ae5f-57e9a10bf661 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Edge DevTools Client                           d21a0e9f-5e29-4b39-8ba5-0e189bc5fe2d 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Azure Stack CSS Labs                           6be86769-af37-4303-8645-9aa42552f5d7 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+VSEng Shared                                   d03b04c7-d1d4-467b-aaaa-87b6fcb38b38 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+ddverify                                       26b9b438-7fe8-482f-b732-ea99c70f2abb 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+VSEng MadDog-RPS Telemetry                     8bc2f89b-c4f6-4559-ad6a-4f2cfa6ccc49 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+CAT_Eng                                        eb87f285-893a-4f0f-8c55-7b4f67b1d097 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+RPS-cloud-common-2                             58706c15-d8a1-4397-af3c-e1ebf1cbebe5 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Core-ES-WorkManagement                         52a442a2-31e9-42f9-8e3e-4b27dbf82673 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+Azure_Maps_MDP_Engineering                     e8b53c88-f8df-42c0-8399-b478bf8df378 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+COSINE-ES-Signing Azure Service                ac073789-bf4e-4438-a70d-fe98276e2771 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+AI Infra Build                                 00c06639-6ee4-454e-8058-8d8b1703bd87 72f988bf-86f1-41af-91ab-2d7cd011db47 Enabled
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> $context=Get-AzSubscription -SubscriptionId 00a291d7-244d-4ab9-a32c-664584b6b9c3
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> Set-AzContext -Context $context
+>> TerminatingError(Set-AzContext): "Cannot bind parameter 'Context'. Cannot convert the "00a291d7-244d-4ab9-a32c-664584b6b9c3" value of type "Microsoft.Azure.Commands.Profile.Models.PSAzureSubscription" to type "Microsoft.Azure.Commands.Profile.Models.Core.PSAzureContext"."
+Set-AzContext : Cannot bind parameter 'Context'. Cannot convert the "00a291d7-244d-4ab9-a32c-664584b6b9c3" value of 
+type "Microsoft.Azure.Commands.Profile.Models.PSAzureSubscription" to type 
+"Microsoft.Azure.Commands.Profile.Models.Core.PSAzureContext".
+At line:1 char:24
++ Set-AzContext -Context $context
++                        ~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Set-AzContext], ParameterBindingException
+    + FullyQualifiedErrorId : CannotConvertArgumentNoMessage,Microsoft.Azure.Commands.Profile.SetAzureRMContextCommand
+Set-AzContext : Cannot bind parameter 'Context'. Cannot convert the "00a291d7-244d-4ab9-a32c-664584b6b9c3" value of type
+"Microsoft.Azure.Commands.Profile.Models.PSAzureSubscription" to type "Microsoft.Azure.Commands.Profile.Models.Core.PSAzureContext".
+At line:1 char:24
++ Set-AzContext -Context $context
++                        ~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Set-AzContext], ParameterBindingException
+    + FullyQualifiedErrorId : CannotConvertArgumentNoMessage,Microsoft.Azure.Commands.Profile.SetAzureRMContextCommand
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> Select-AzSubscription -SubscriptionId 00a291d7-244d-4ab9-a32c-664584b6b9c3
+
+Name                                     Account                   SubscriptionName         Environment              TenantId
+----                                     -------                   ----------------         -----------              --------
+Ignacio's Subscription (00a291d7-244d... igalvare@microsoft.com    Ignacio's Subscription   AzureCloud               72f988bf-86f1-41af-91...
+
+
+PS C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS> .\Create-RecoveryVM.ps1
+
+
+DISCLAIMER: Be aware that this script is intended to create a recovery VM in your environment, having cost associated to it.
+
+WARNING: This script only works in VMs that have managed disks, and as long as the disks are not encrypted
+
+
+Please select what operation you want to proceed with:
+1. Create RecoveryVM and attach OS Disk for further investigation. OS Disk snapshot will be taken for backup.
+2. Restore Last Known Good Configuration. This operation creates RecoveryVM and attach OS Disk, restoring last known good configuration on it. OS Disk snapshot will be taken for backup. Disks will be automatically swapped after
+3. Restore Disk (Swap OS Disk). Perform this operation after the disk was fixed on Recovery VM
+4. Delete RecoveryVM and all its objects. Disk used as backup will remain, will have to be deleted manually
+Please select an option (1,2,3,4):
+
+
+This is the list of operations done by this script
+1) AZCXP-COM-LAB2c will be stopped
+2) AZCXP-COM-LAB2c OS disk will get an snapshot taken
+3) AZCXP-COM-LAB2c will get swapped OS disk for a new one from the snapshot in order to proceed with the mount of the old disk in Recovery VM
+4) All the information from the console of this script will be kept in a txt file in the running directory for debugging purposes
+Transcript started, output file is .\AZCXP-COM-LAB2c-CreateRecoveryVM-2020-05-08-192417.txt
+
+
+Stopping VM AZCXP-COM-LAB2c to perform all the operations
+
+
+Taking Snapshot of AZCXP-COM-LAB2c
+
+Creating network resources for RecoveryVM-MS.
+VNET:RecoveryVNET-MS
+Subnet:RecoveryVNET-MS-subnet1
+Public IP:rvmpublicip-2020-05-08-192510
+NIC:rvm-nic12020-05-08-192510
+
+
+
+Please enter new admin credentials for the RECOVERYVM
+Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
+The value must be between 12 and 123 characters long.
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script 
+file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct 
+and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+Set-AzVMBootDiagnostic : The term 'Set-AzVMBootDiagnostic' is not recognized as the name of a cmdlet, function, script file, or operable
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At C:\Users\ssg86\Documents\Microsoft\Scripts\Powershell\PS\PublicPS\Create-RecoveryVM.ps1:198 char:23
++         $recoveryvm = Set-AzVMBootDiagnostic -VM $recoveryvm -Disable
++                       ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Set-AzVMBootDiagnostic:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+
+
+Creating new VM
+WARNING: Since the VM is created using premium storage or managed disk, existing standard storage account, csb00a291d7244dx4ab9xa32, is used for boot diagnostics.
+
+Installing Hyper-V on Recovery VM. It will be rebooted.

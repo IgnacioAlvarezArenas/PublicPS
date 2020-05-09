@@ -1,0 +1,26 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20200508220314
+Username: NATXO_DESKTOP\ssg86
+RunAs User: NATXO_DESKTOP\ssg86
+Configuration Name: 
+Machine: NATXO_DESKTOP (Microsoft Windows NT 10.0.18362.0)
+Host Application: C:\WINDOWS\system32\WindowsPowerShell\v1.0\PowerShell.exe
+Process ID: 13120
+PSVersion: 5.1.18362.752
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.18362.752
+BuildVersion: 10.0.18362.752
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\AZCXP-COM-LAB2-RestoreDisk-2020-05-08-220314.txt
+Detaching disk from RecoveryVM-MS
+                         True         OK OK
+Swapping OSDisk on AZCXP-COM-LAB2 with the recovered disk
+**********************
+Windows PowerShell transcript end
+End time: 20200508220427
+**********************
